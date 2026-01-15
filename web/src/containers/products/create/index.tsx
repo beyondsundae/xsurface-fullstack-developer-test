@@ -49,13 +49,10 @@ const maxActionCount = 25;
 const roundedInput = { borderRadius: 24, padding: "10px 20px" };
 
 const formatter: InputNumberProps<number>["formatter"] = (value) => {
-  console.log("1 🍋 value", value);
 
   const [start, end] = `${value}`.split(".") || [];
   const v = `${start}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 
-  console.log("2 🦆 [start, end]", [start, end]);
-  console.log("3 🦄 v", v);
 
   return `${end ? `${v}.${end}` : `${v}`}`;
 };
@@ -68,11 +65,9 @@ export default function CreateProduct({}: props) {
   const [uploadedURL, setUploadedURL] = useState<string[]>([]);
   const [deletingIndex, setDeletingIndex] = useState<number | null>(null);
   const [isDisabled, setIsDisabled] = useState(false);
-  console.log("🍋 uploadedURL", uploadedURL);
 
   /* ---------------------------------- form ---------------------------------- */
   const [form] = Form.useForm();
-
 
   /* -------------------------------- variables ------------------------------- */
 
@@ -153,7 +148,6 @@ export default function CreateProduct({}: props) {
     const isDiffMoreThan5hrs = diffTime > toReleaseSecs;
 
     if (currentUsage?.count >= maxActionCount) {
-   
       if (isDiffMoreThan5hrs) {
         currentUsage = limitUsage;
       } else {
@@ -205,19 +199,13 @@ export default function CreateProduct({}: props) {
           formData
         )
         ?.then(({ data: latestUploadedURL = null }) => {
-
           if (latestUploadedURL) {
             setUploadedURL((prev) => [...prev, latestUploadedURL]);
-            console.log(
-              "[doUploadToS3] 2 🌮 latestUploadedURL",
-              latestUploadedURL
-            );
 
             message.success("Files uploaded successfully!");
           }
         });
     } catch (error) {
-      console.error("Error uploading image to S3:", error);
       message.error(`Failed to upload image to S3. Please try again. ${error}`);
     } finally {
       setIsUploading(false);
@@ -236,7 +224,6 @@ export default function CreateProduct({}: props) {
         ...values,
       })
       .then(({ data }) => {
-
         message.success(
           `Created product sucessfully ${data?.code}-${data?.productName}`
         );
@@ -245,12 +232,9 @@ export default function CreateProduct({}: props) {
       })
       .catch((err) => {
         const errMessage = err?.response?.data?.message;
-        console.log("🐴 err", err);
 
         message.error(`Failed to upload product, ${err}, ${errMessage}`);
       });
-
-    console.log("🫒 result", result);
   };
 
   /* --------------------------------- render --------------------------------- */
@@ -309,7 +293,6 @@ export default function CreateProduct({}: props) {
                       }
                     });
                 } catch (error) {
-                  console.error("Error deleting image to S3:", error);
                   message.error(
                     `Failed to deleting image to S3. Please try again. ${error}`
                   );
@@ -330,8 +313,6 @@ export default function CreateProduct({}: props) {
   }, [uploadedURL, setUploadedURL, deletingIndex, setDeletingIndex]);
 
   const onFinish = async (values: FieldType) => {
-    console.log("Received values of form: ", values);
-
     await createProduct(values);
   };
 
@@ -344,7 +325,6 @@ export default function CreateProduct({}: props) {
       );
       setIsDisabled(true);
     }
-    console.log("🍏 firstCheck", firstCheck);
   }, []);
 
   return (
@@ -385,9 +365,6 @@ export default function CreateProduct({}: props) {
           disabled={isDisabled}
           layout={"vertical"}
           form={form}
-          onValuesChange={(a, b) => {
-            console.log("a,b", a, b);
-          }}
           size="large"
           onFinish={onFinish}
           className="rounded-lg w-2/5"
