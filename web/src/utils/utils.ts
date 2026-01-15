@@ -1,6 +1,10 @@
-
 export const formatPrice = (value: number | undefined) => {
-  return `฿${Number(value)?.toFixed(2)}`;
+  if (value == null) return "฿0.00";
+
+  return `฿${value.toLocaleString("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}`;
 };
 
 export const formatFileSize = (size: number) => {
@@ -10,4 +14,3 @@ export const formatFileSize = (size: number) => {
 
   return fileSizeInMB;
 };
-
