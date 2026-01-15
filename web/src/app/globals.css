@@ -1,0 +1,111 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  /* Use Prompt (Next font var) for Ant Design components */
+  --ant-font-family: var(--font-prompt), system-ui, -apple-system, Segoe UI,
+    Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  /* Prefer Prompt globally when available */
+  font-family: var(--font-prompt), system-ui, -apple-system, Segoe UI, Roboto,
+    Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+}
+
+/* ----------------------------- carousel things ---------------------------- */
+
+.styled-banner-carousel .ant-carousel .slick-prev,
+.styled-banner-carousel .ant-carousel .slick-next {
+  z-index: 2;
+  margin-left: 1%;
+  margin-right: 2%;
+
+  &::after {
+    width: 25px;
+    height: 25px;
+  }
+}
+
+/* ------------------------------------ main ----------------------------------- */
+
+.light-carousel .ant-carousel .slick-prev,
+.light-carousel .ant-carousel .slick-next {
+  z-index: 2;
+  /* position: absolute; */
+  /* height: 10%; */
+  top: 45%;
+  color: #d70015;
+
+  /* --------------------------------- circle --------------------------------- */
+  background-color: white !important; /* Optional: background color */
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+
+  margin: 0px -40px;
+
+  &::after {
+    /* ---------------------------------- arrow --------------------------------- */
+    top: 40%;
+    left: 40%;
+  }
+}
+.light-carousel .ant-carousel .slick-dots li button {
+  background: gainsboro;
+  opacity: 1;
+}
+.light-carousel .ant-carousel .slick-dots li.slick-active {
+  width: 70px;
+  height: 5px; /* space below dot */
+
+  &::after {
+    width: 70px !important; /* main width */
+    height: 4px; /* size dot */
+    background: #d70015;
+  }
+}
+
+/* ------------------------------------ highlight ----------------------------------- */
+
+.styled-highlight-carousel .ant-carousel .slick-prev,
+.styled-highlight-carousel .ant-carousel .slick-next {
+  z-index: 2;
+  color: #d70015;
+  &::after {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.styled-highlight-carousel .ant-carousel .slick-dots li button {
+  background: gainsboro;
+  opacity: 1;
+}
+.styled-highlight-carousel .ant-carousel .slick-dots li.slick-active {
+  width: 70px;
+  height: 5px; /* space below dot */
+
+  &::after {
+    width: 70px !important; /* main width */
+    height: 4px; /* size dot */
+    background: #d70015;
+  }
+}
