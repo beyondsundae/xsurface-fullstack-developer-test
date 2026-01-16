@@ -1,12 +1,12 @@
 import {
-    DeleteObjectCommand,
-    PutObjectCommand,
-    S3Client,
+  DeleteObjectCommand,
+  PutObjectCommand,
+  S3Client,
 } from "@aws-sdk/client-s3";
 import type {
-    S3DeletedResult,
-    S3ParamsPayload,
-    S3UploadPayload,
+  S3DeletedResult,
+  S3ParamsPayload,
+  S3UploadPayload,
 } from "./interface.js";
 
 export const uploadImageToS3 = async ({
@@ -91,7 +91,6 @@ export const deleteImageFromS3 = async ({
 // export async function getAllObjectsSignedUrls({
 //     Bucket,
 //   }: S3ParamsPayload): Promise<{ key: string; url: string }[]> {
-//     console.log("1 [getAllObjectsSignedUrls] 🍤 Bucket", Bucket);
 
 //     const s3 = new S3Client({
 //       region: process.env.NEXT_PUBLIC_AWS_REGION,
@@ -104,16 +103,11 @@ export const deleteImageFromS3 = async ({
 //     try {
 //       // List all objects in the bucket
 //       const listCommand = new ListObjectsV2Command({ Bucket });
-//       console.log("2 [getAllObjectsSignedUrls] 🫒 listCommand", listCommand);
 
 //       const listObjectsOutput: ListObjectsV2CommandOutput = await s3.send(
 //         listCommand
 //       );
 
-//       console.log(
-//         "3 [getAllObjectsSignedUrls] 🍕 listObjectsOutput",
-//         listObjectsOutput
-//       );
 
 //       const signedUrls = await Promise.all(
 //         (listObjectsOutput.Contents || []).map(async (object) => {
@@ -131,7 +125,6 @@ export const deleteImageFromS3 = async ({
 //         })
 //       );
 
-//       console.log("4 [getAllObjectsSignedUrls] 😺 signedUrls", signedUrls);
 
 //       // Filter out any null results (in case an object didn't have a Key for some reason)
 //       return signedUrls.filter(

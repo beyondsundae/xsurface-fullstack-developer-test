@@ -1,5 +1,5 @@
 // Remove .js extension
-import { uploadImageToS3 } from "./s3-client.services";
+import { uploadImageToS3 } from "./s3-client.services.js";
 
 describe('uploadImageToS3', () => {
   it('throws when no file is provided', async () => {
