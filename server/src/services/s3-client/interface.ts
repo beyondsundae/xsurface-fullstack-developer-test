@@ -14,7 +14,6 @@ export type S3DeletedResult = {
 };
 
 export type S3UploadPayload = {
-  //   formData: FormData;
-  file: any;
+  file: Express.Multer.File | undefined;
   payload: UploadImageToS3Payload;
 };

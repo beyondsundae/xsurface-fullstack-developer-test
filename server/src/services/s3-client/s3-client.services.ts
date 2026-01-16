@@ -24,6 +24,9 @@ export const uploadImageToS3 = async ({
   const { bucket, key } = payload;
 
   try {
+    if (!file || !file.buffer) {
+      throw new Error("No file provided for upload");
+    }
     const fileUploadParams = {
       Bucket: bucket,
       Key: key,
@@ -34,7 +37,7 @@ export const uploadImageToS3 = async ({
     const imageParam = new PutObjectCommand(fileUploadParams);
     const test = await s3.send(imageParam);
     const { $metadata } = test || {};
-    const { httpStatusCode, totalRetryDelay, attempts } = $metadata || {};
+    const { httpStatusCode } = $metadata || {};
 
     if (httpStatusCode === 200) {
       const combinedURL = `${process.env.BUCKET_PRODUCTS_BASE_URL}/${key}`;

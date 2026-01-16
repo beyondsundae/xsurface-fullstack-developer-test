@@ -1,7 +1,7 @@
+import type { QueryFilter, QueryOptions } from "mongoose";
 import ProductModel from "../../models/products/products.model.js";
-import type { IProductInput } from "./interface.js";
-import type { QueryFilter, HydratedDocument, QueryOptions } from "mongoose";
 import type { Product } from "../../models/products/products.schema.js";
+import type { IProductInput } from "./interface.js";
 
 export const getProduct = async (
   code: string,
@@ -10,7 +10,6 @@ export const getProduct = async (
   if (!code) throw new Error("code not found");
 
   const result = await ProductModel.findOne({ code }, options);
-  console.log("[getProduct] 🚀 result", result);
   return result;
 };
 
@@ -18,16 +17,91 @@ export const findProducts = async (
   filter: QueryFilter<Product>,
   options?: QueryOptions
 ): Promise<Product[]> => {
-  console.log("🦜 filter: %s and  options: %s", {}, options);
-  console.dir(filter, { depth: null });
+  try {
+    if (Object.keys(filter).length) {
+      const searchTextArray =
+        filter?.["$or"]?.find((each: any) => each?.searchText)?.[
+          "searchText"
+        ]?.["$in"] || [];
+
+      const cleanTextArray: string[] = [];
+      const rawMappedSearchText = searchTextArray
+        .map((each: string) => {
+          const textWithRemovedSymbol = each
+            .toString()
+            .replace("/", "")
+            .replace("/i", "")
+            .trim();
+
+          const textEndClean = textWithRemovedSymbol.split("-")[0] as string;
+
+          cleanTextArray.push(textEndClean);
+          return textWithRemovedSymbol;
+        })
+        .filter((each: string) => String(each).length > 2)
+        .map((each: string) => `.*${each}.*`);
+
+      const mappedSearchText = [...new Set(rawMappedSearchText)];
+
+      const searchStage = {
+        $search: {
+          index: "product_advance_search",
+          compound: {
+            should: [
+              {
+                regex: {
+                  query: mappedSearchText,
+                  path: ["code", "productName"],
+                  allowAnalyzedField: true,
+                },
+              },
+            ],
+          },
+        },
+      };
+
+      const pipeline: any[] = [
+        searchStage,
+        { $skip: options?.skip ?? 0 },
+        { $limit: options?.limit ?? 20 },
+      ];
+
+      const result = await ProductModel.aggregate(pipeline, {
+        maxTimeMS: 3000,
+        allowDiskUse: true,
+      })
+        .read("secondaryPreferred")
+        .exec();
+
+      return result;
+    }
+  } catch (err: any) {
+    console.error("⚠️ Atlas Search failed, falling back to find()", {
+      message: err.message,
+      code: err.code,
+    });
+  }
 
   let query = ProductModel.find({ ...filter });
   if (options?.limit) query.limit(options?.limit);
   if (options?.skip) query.skip(options?.skip);
   if (options?.sort) query.sort(options?.sort);
 
-  const result = await query.maxTimeMS(2000); //.lean()
-  console.log("🍤 result", result);
+  const result = await query.maxTimeMS(2000)?.lean();
+
+  return result;
+};
+
+export const findProductsMeta = async (
+  filter: QueryFilter<Product>,
+  options?: QueryOptions
+): Promise<Number> => {
+  let query = ProductModel.find({ ...filter });
+  if (options?.limit) query.limit(options?.limit);
+  if (options?.skip) query.skip(options?.skip);
+  if (options?.sort) query.sort(options?.sort);
+
+  const result = await query?.countDocuments().maxTimeMS(2000); //.lean()
 
   return result;
 };
@@ -35,9 +109,7 @@ export const findProducts = async (
 export const createProduct = async (
   payload: IProductInput
 ): Promise<Product> => {
-  console.log("[createProduct] 🧁 payload", payload);
   const result = await ProductModel.create({ ...payload });
-  console.log("[createProduct] 🥐 result", result);
   return result;
 };
 

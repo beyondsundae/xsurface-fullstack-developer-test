@@ -1,7 +1,11 @@
-import type { IProductFilterInput } from "@/services/products/interface.js";
+import type {
+  IProductFilterInput,
+  ResultFindProduct,
+} from "@/services/products/interface.js";
 import {
   createProduct,
   findProducts,
+  findProductsMeta,
   getProduct,
 } from "@/services/products/products.service.js";
 import {
@@ -11,16 +15,16 @@ import {
 } from "@/utils/utils.js";
 import {
   Router,
-  type Request,
-  type Response,
   type Router as ExpressRouter,
   type NextFunction,
+  type Request,
+  type Response,
 } from "express";
 
 const router: ExpressRouter = Router();
 
 router.get(
-  "/:code",
+  "/:code/show",
   async (req: Request, res: Response, next: NextFunction) => {
     const code = req?.params?.code as string;
 
@@ -34,8 +38,8 @@ router.get(
   }
 );
 
-router.get("/find", async (req: Request, res: Response, next: NextFunction) => {
-  const filters = req.body as IProductFilterInput;
+router.post("/", async (req: Request, res: Response, next: NextFunction) => {
+  const filters = JSON.parse(req.body?.filter) as IProductFilterInput;
   const options = req.query as IQueryOptions;
 
   try {
@@ -50,8 +54,17 @@ router.get("/find", async (req: Request, res: Response, next: NextFunction) => {
       formattedOption
     );
 
-    const result = await findProducts(formattedFilter, formattedOption);
-    console.log("🍩 test", result);
+    const result = (await findProducts(formattedFilter, formattedOption).then(
+      async (data) => {
+        const meta = await findProductsMeta(
+          { ...(Object.keys(formattedFilter)?.length && formattedFilter) },
+          { ...(Object.keys(formattedFilter)?.length && formattedOption) }
+        );
+
+
+        return { products: data, count: meta };
+      }
+    )) as ResultFindProduct;
 
     res.json(result);
   } catch (error) {
@@ -65,15 +78,12 @@ router.post(
   "/create",
   async (req: Request, res: Response, next: NextFunction) => {
     const { body } = req;
-    console.log("[/createProduct] 🦆 body", body);
 
     try {
-      const test = await createProduct({ ...body });
-      console.log("[/create-product] 🍕 test", test);
+      const result = await createProduct({ ...body });
 
-      res.send("post create-product");
+      res.send(result);
     } catch (error) {
-      console.log("🐿️ error", error);
 
       next(error);
     }
