@@ -41,7 +41,7 @@ export const formatOptionTransform = (params: IQueryOptions) => {
   }
 
   if (params?.pageLimit) {
-    result = { ...result, limit: params?.pageLimit };
+    result = { ...result, limit: Number(params?.pageLimit) };
   }
 
   if (params?.sort) {
@@ -68,10 +68,17 @@ export const formatFilterTransform = (filter: IProductFilterInput) => {
     };
   }
 
-  if (filter?.name) {
+  if (filter?.productName) {
     result = {
       ...result,
-      name: mongooseStringFilterTransform(filter?.name),
+      productName: mongooseStringFilterTransform(filter?.productName),
+    };
+  }
+
+  if (filter?.searchText) {
+    result = {
+      ...result,
+      searchText: mongooseStringFilterTransform(filter?.searchText),
     };
   }
 

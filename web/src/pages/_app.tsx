@@ -1,11 +1,12 @@
-import type { AppProps } from 'next/app';
-import { Prompt } from 'next/font/google';
-import { ConfigProvider } from 'antd';
-import '../app/globals.css';
+import { ConfigProvider } from "antd";
+import type { AppProps } from "next/app";
+import { Prompt } from "next/font/google";
+import "../app/globals.css";
+import BreadcrumbLayout from "../components/BreadcrumbLayout";
 
 const promptFont = Prompt({
-  weight: ['400', '500', '600', '700'],
-  variable: '--font-prompt',
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-prompt",
 });
 
 export default function App({ Component, pageProps }: AppProps) {
@@ -19,6 +20,7 @@ export default function App({ Component, pageProps }: AppProps) {
           },
         }}
       >
+        <BreadcrumbLayout />
         <Component {...pageProps} />
       </ConfigProvider>
     </div>

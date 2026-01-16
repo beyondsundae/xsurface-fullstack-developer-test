@@ -1,4 +1,4 @@
-import mongoose, { Schema, type InferSchemaType } from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 
 // Subdocument schema for dimensions
 export const productDimensionSchema = new Schema(
@@ -14,8 +14,8 @@ export const productDimensionSchema = new Schema(
 export const productSchema = new Schema(
   {
     isActive: { type: Boolean, default: true },
-    images: [{ type: String }],
-    name: { type: String, required: true, trim: true },
+    images: [{ type: String, }],
+    productName: { type: String, required: true, trim: true },
     code: { type: String, required: true, trim: true, unique: true },
     price: { type: Number, required: true, min: 0 },
     // Arrays of ObjectId references (adjust ref names to your collections)

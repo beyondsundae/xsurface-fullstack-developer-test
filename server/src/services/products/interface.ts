@@ -1,9 +1,11 @@
+import type { Product } from "@/models/products/products.schema.js";
 import type { IMongoNumberFilter, IMongoStringFilter } from "@/utils/utils.js";
+import type { Model } from "mongoose";
 
 export interface IProductInput {
   isActive: boolean;
   images: string[];
-  name: string;
+  productName: string;
   code: string;
   price: number;
   categories?: string[];
@@ -22,9 +24,10 @@ export interface IDimensionInput {
 
 export interface IProductFilterInput {
   OR?: [IProductFilterInput];
-  name?: IMongoStringFilter;
+  productName?: IMongoStringFilter;
   code?: IMongoStringFilter;
   price?: IMongoNumberFilter;
+  searchText?: IMongoStringFilter;
   // dimension: DimensionInput;
   // weight: number;
 }
@@ -34,3 +37,8 @@ export interface IProductFilterInput {
 //     height: number;
 //     unit: string;
 //   }
+
+export interface ResultFindProduct {
+  products: Model<Product>[]
+  count: number
+}
