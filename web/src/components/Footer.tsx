@@ -40,7 +40,7 @@ export default function Footer() {
 
   return (
     <div
-      className="relative w-full"
+      className="relative w-full pb-6"
       style={{ backgroundColor: theme.color.footer }}
     >
       <Row justify="center">
@@ -60,17 +60,14 @@ export default function Footer() {
         </Col>
       </Row>
       <Row justify="center" className="my-12">
-        <Col span={5} >
+        <Col span={5}>
           <StyledWhiteText>เกี่ยวกับเรา</StyledWhiteText>
 
           <Row className="my-6">
-            <Flex vertical gap="middle" >
+            <Flex vertical gap="middle">
               {mockAboutUs?.map((each, index) => (
                 <Link href={each?.link} key={index}>
-                  <StyledSecondaryText
-                    className="text-start"
-                    
-                  >
+                  <StyledSecondaryText className="text-start">
                     {each?.title}
                   </StyledSecondaryText>
                 </Link>
@@ -78,7 +75,7 @@ export default function Footer() {
             </Flex>
           </Row>
         </Col>
-        <Col span={10} >
+        <Col span={10}>
           <StyledWhiteText>ติดต่อเรา</StyledWhiteText>
           <Row className="my-6">
             <StyledSecondaryText className="max-w-70">
@@ -86,13 +83,13 @@ export default function Footer() {
             </StyledSecondaryText>
           </Row>
           <Row>
-            <StyledWhiteText>อีเมล: {''}</StyledWhiteText>
+            <StyledWhiteText>อีเมล: {""}</StyledWhiteText>
             <StyledSecondaryText>support@xsurface.com</StyledSecondaryText>{" "}
-            <StyledWhiteText>เบอร์: {''}</StyledWhiteText>
+            <StyledWhiteText>เบอร์: {""}</StyledWhiteText>
             <StyledSecondaryText>+66 65-656-2887</StyledSecondaryText>
           </Row>
         </Col>
-        <Col span={5} >
+        <Col span={5}>
           <StyledWhiteText>
             สมัครง่ายๆ ก็ลงขายกับเราได้เลย ฟรี ไม่มีค่าใช้จ่าย
           </StyledWhiteText>
@@ -127,7 +124,7 @@ export default function Footer() {
           <StyledWhiteText>XSURFACE Co. , Ltd.</StyledWhiteText>
         </Col>
       </Row>
-      <Row justify="center">
+      <Row justify="center" className="my-5">
         <StyledSecondaryText className="mx-2">
           นโยบายความเป็นส่วนตัว
         </StyledSecondaryText>
@@ -135,7 +132,12 @@ export default function Footer() {
           ข้อกำหนด และนโยบาย{" "}
         </StyledSecondaryText>
       </Row>
-      Footer
+
+      <Row justify="end">
+        <StyledSecondaryText className="mx-2">
+          Made by Thankrit P.
+        </StyledSecondaryText>
+      </Row>
     </div>
   );
 }

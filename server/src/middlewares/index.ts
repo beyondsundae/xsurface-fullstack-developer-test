@@ -1,10 +1,12 @@
 import { registerRoutes } from "@/routes/index.js";
 import express, {
   type Application,
+  type NextFunction,
   type Request,
   type Response,
-  type NextFunction,
 } from "express";
+
+import cors from 'cors';
 
 export const loggerMiddleware = (
   req: Request,
@@ -16,12 +18,18 @@ export const loggerMiddleware = (
 };
 
 export function registerMiddlewares(app: Application): void {
+  app.use(
+    cors({
+      origin: process.env.FRONTEND_URL as string,
+    })
+  );
+
   app.use(express.json());
   app.use(loggerMiddleware);
   registerRoutes(app);
 
   app.use((err: any, req: Request, res: Response, next: NextFunction) => {
-    console.log('[registerMiddlewares] err')
+    console.log("[registerMiddlewares] err");
     console.error(err);
 
     res.status(err.status || 500).json({
