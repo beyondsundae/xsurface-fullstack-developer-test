@@ -1,31 +1,56 @@
+"use client";
+
 import StyledListCard from "@/src/components/StyledListCard";
-import { debugginBorder } from "@/src/utils/components";
+import { IProduct } from "@/src/components/types/interface";
 import { theme } from "@/src/utils/theme";
 import { SearchOutlined } from "@ant-design/icons";
-import { Col, Input, message, Row, Spin } from "antd";
+import { Col, Input, message, Pagination, Row, Spin } from "antd";
 import axios, { AxiosRequestConfig } from "axios";
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { useDebounce } from "use-debounce";
 
-interface props {}
 
-export default function Products({}: props) {
+export default function Products() {
+  /* ---------------------------------- utils --------------------------------- */
+  const router = useRouter();
+
   /* ---------------------------------- state --------------------------------- */
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState<IProduct[]>([]);
+
   const [count, setSetCount] = useState(0);
+
   const [searchText, setSearchText] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [pageLimit, setPageLimit] = useState<number>(10);
+
   const [isLoading, setIsLoading] = useState<boolean>(false);
   /* -------------------------------- variables ------------------------------- */
-  const [debouncedSearchText] = useDebounce(searchText, 500);
-  console.log("🧅 debouncedSearchText", debouncedSearchText);
+  const [debouncedSearchText] = useDebounce<string | null>(searchText, 500);
 
   /* -------------------------------- functions ------------------------------- */
-  const formatFilterSearch = useMemo(() => {
-    console.log("🔥 debouncedSearchText", debouncedSearchText);
+  const formatQueryString = useMemo(() => {
+    let result: string[] = [];
 
+    if (currentPage || pageLimit) {
+      result = [...result, `?`];
+    }
+
+    if (currentPage) {
+      result = [...result, `currentPage=${currentPage}&`];
+    }
+    if (pageLimit) {
+      result = [...result, `pageLimit=${pageLimit}&`];
+    }
+
+    return result?.join("");
+  }, [currentPage, pageLimit]);
+
+  const formatFilterSearch = useMemo(() => {
     const formattedText = debouncedSearchText?.trim();
 
-    if (formattedText === "" || !formattedText) return {};
+    if (formattedText === "" || !formattedText || formattedText?.length < 3)
+      return {};
 
     return {
       OR: [
@@ -35,6 +60,9 @@ export default function Products({}: props) {
         {
           code: { in_contains: debouncedSearchText },
         },
+        {
+          searchText: { in_contains: debouncedSearchText },
+        },
         // {
         //   price: { gte: debouncedSearchText },
         // },
@@ -43,14 +71,21 @@ export default function Products({}: props) {
   }, [debouncedSearchText]);
 
   const fetchProducts = async () => {
-    console.log("🍿 formatFilterSearch", formatFilterSearch);
+    if (debouncedSearchText) {
+      setCurrentPage(1);
+    }
+    if (debouncedSearchText && debouncedSearchText?.length < 3) return;
+
     setIsLoading(true);
-    const result = await axios
-      .post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/products`, {
-        ...(formatFilterSearch && {
-          filter: JSON.stringify(formatFilterSearch),
-        }),
-      } as unknown as AxiosRequestConfig<unknown>)
+    await axios
+      .post(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/products${formatQueryString}`,
+        {
+          ...(formatFilterSearch && {
+            filter: JSON.stringify(formatFilterSearch),
+          }),
+        } as unknown as AxiosRequestConfig<unknown>
+      )
       .then(({ data }) => {
         const { products, count } = data || {};
         console.log("🐷 data", data);
@@ -70,7 +105,7 @@ export default function Products({}: props) {
   /* -------------------------------- useEffect ------------------------------- */
   useEffect(() => {
     fetchProducts();
-  }, [formatFilterSearch]);
+  }, [formatFilterSearch, formatQueryString, debouncedSearchText]);
 
   return (
     <>
@@ -80,11 +115,8 @@ export default function Products({}: props) {
           <span className="text-xl ">Product List</span>
         </Col>
       </Row>
-      <Row
-        className="w-screen h-full justify-center mt-6 "
-        style={debugginBorder}
-      >
-        <Row className="w-9/10" style={debugginBorder}>
+      <Row className="w-screen  justify-center mt-6 ">
+        <Row className="w-9/10">
           <Input
             size="large"
             className="h-full"
@@ -98,20 +130,28 @@ export default function Products({}: props) {
             allowClear
           />
         </Row>
-        {/* <Row className="w-full justify-end m" style={debugginBorder}>
-          {count}
-        </Row> */}
+
         <Col offset={20}>
-          <span className="text-md font-semibold" style={{color: theme.color.secondary }}>พบสินค้า {count } รายการ</span>
+          <span
+            className="text-md font-semibold"
+            style={{ color: theme.color.secondary }}
+          >
+            พบสินค้า {count} รายการ
+          </span>
         </Col>
         {count ? (
-          <Row className="w-5/6 mt-8 " style={debugginBorder}>
+          <Row className="w-5/6 mt-8">
             {isLoading ? (
               <Spin />
             ) : (
               <>
                 {products?.map((each, index) => (
-                  <Col key={index} span={4} className="mx-5 mb-12">
+                  <Col
+                    key={index}
+                    span={4}
+                    className="mx-5 mb-12"
+                    style={{ cursor: "pointer" }}
+                  >
                     <StyledListCard
                       imgHeight={"200px"}
                       index={index}
@@ -127,6 +167,19 @@ export default function Products({}: props) {
             <span className=" text-lg">Not found item</span>
           </Row>
         )}
+      </Row>
+      <Row justify={"end"} className="m-5">
+        <Pagination
+          showSizeChanger
+          pageSize={pageLimit}
+          current={currentPage}
+          onChange={(page, pageSize) => {
+            setCurrentPage(page);
+            setPageLimit(pageSize);
+          }}
+          defaultCurrent={6}
+          total={count}
+        />
       </Row>
     </>
   );

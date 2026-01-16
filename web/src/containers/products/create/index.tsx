@@ -15,7 +15,7 @@ import {
   Typography,
   Upload,
   UploadFile,
-  UploadProps,
+  UploadProps
 } from "antd";
 import { SizeType } from "antd/es/config-provider/SizeContext";
 import axios from "axios";

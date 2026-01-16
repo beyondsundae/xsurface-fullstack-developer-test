@@ -15,25 +15,25 @@ const contentStyle: React.CSSProperties = {
   ...fixedHeight,
   width: "100%",
   display: "flex",
+  flexDirection: "column",
+  gap: 8,
   alignItems: "center",
   justifyContent: "center",
   color: "#fff",
   textAlign: "center",
-  background: "#364d79"
+  background: "#364d79",
 };
 
 export default function Banner() {
   const mockBanner = Array(4)?.fill({
     title: "BANNER XSURFACE",
+    describe: "1440x472 px",
   });
   return (
     <>
-      <div
-        className="styled-banner-carousel w-full flex items-center justify-center"
-        
-      >
+      <div className="styled-banner-carousel w-full flex items-center justify-center">
         <Carousel
-        arrows
+          arrows
           infinite={true}
           style={carouselStyle}
           autoplay={{ dotDuration: true }}
@@ -42,7 +42,11 @@ export default function Banner() {
           {mockBanner?.map((each, index) => (
             <div key={index}>
               <h3 style={contentStyle}>
-                <div className="text-7xl">{each?.title}{' '}{Number(index) + 1}</div>
+                <p className="text-7xl">
+                  {each?.title} {Number(index) + 1}
+                </p>
+                <p className="text-7xl">{each?.describe}</p>
+
                 {/* <Img> something */}
               </h3>
             </div>

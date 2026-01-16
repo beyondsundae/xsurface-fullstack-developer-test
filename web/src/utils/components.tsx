@@ -26,3 +26,4 @@ export const StyledWhiteText = styled.span`
 export const StyledSecondaryText = styled.span`
   color: ${theme.color.secondary};
 `;
+
