@@ -26,13 +26,9 @@ const carouselStyle: React.CSSProperties = {
   width: "100%",
 };
 
-//TODO: keep in localstorage products
-
 export default function LateseViewed() {
-  console.log("🥘 mockLatestViewedProducts", mockLatestViewedProducts);
   /* ---------------------------------- state --------------------------------- */
   const [currentSlide, setCurrentSlide] = useState<number>(0);
-  console.log("🥑 currentSlide", currentSlide);
 
   // pagination concept
   //   (1-1) * 6 = start at 0/ length = 6
@@ -46,14 +42,6 @@ export default function LateseViewed() {
   const limitedLatestViewedProduts = useMemo(
     () => mockLatestViewedProducts?.slice(startIndex, startIndex + limit),
     [startIndex, currentSlide]
-  );
-  console.log(
-    "🦄 limitedLatestViewedProduts",
-    limitedLatestViewedProduts,
-    "startIndex",
-    startIndex,
-    "pagesTotal",
-    pagesTotal
   );
 
   return (
@@ -87,10 +75,7 @@ export default function LateseViewed() {
                     style={{ border: "1px solid transparent" }}
                   >
                     {limitedLatestViewedProduts?.map((each, index) => (
-                      <Col
-                        key={index}
-                        className="mb-3"
-                      >
+                      <Col key={index} className="mb-3">
                         <StyledCenterDiv>
                           <Avatar
                             className="rounded-xl"

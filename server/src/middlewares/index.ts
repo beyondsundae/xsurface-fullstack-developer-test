@@ -1,4 +1,3 @@
-import { registerRoutes } from "@/routes/index.js";
 import express, {
   type Application,
   type NextFunction,
@@ -6,6 +5,8 @@ import express, {
   type Response,
 } from "express";
 
+
+import { registerRoutes } from "@/routes/index.js";
 import cors from 'cors';
 
 export const loggerMiddleware = (
