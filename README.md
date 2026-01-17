@@ -4,8 +4,9 @@
 - Functions are located at `/test/xsf.js`
 - Jest tests are located at `/server/src/tests/xsf.test.js`
 
-Production Demo:
-https://xsurface-fullstack-developer-test-ckwheiiky.vercel.app
+## Deployed App
+Production Link:
+https://xsurface-fullstack-developer-test.vercel.app/landing-page
 
 Figma Brainstorm & Planning Board:
 https://www.figma.com/board/ybKGgmHQXk05aCsK6dWw6O/xsf-brain?node-id=0-1&p=f&t=R03v19fIMtFjZ6zz-0
