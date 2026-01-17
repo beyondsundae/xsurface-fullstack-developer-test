@@ -14,7 +14,7 @@ https://www.figma.com/board/ybKGgmHQXk05aCsK6dWw6O/xsf-brain?node-id=0-1&p=f&t=R
 - `src/pages/landing-page` — landing screen
 - `src/pages/products` — list page
 - `src/pages/products/create` — create form + uploads
-- `src/pages/products/[_id]` — edit page
+- 🚧 `src/pages/products/[_id]` — edit page
 - `src/pages/products/[_id]/show` — detail page
 - `src/containers/products/*` — page logic and UI
 - `src/components` — reusable UI (cards, carousels, breadcrumbs)
@@ -38,7 +38,3 @@ https://www.figma.com/board/ybKGgmHQXk05aCsK6dWw6O/xsf-brain?node-id=0-1&p=f&t=R
 - Tailwind classes in `src/app/globals.css`
 - `styled-components` for custom styles
 
-## Tips
-- Ensure the backend is running and reachable at `NEXT_PUBLIC_BACKEND_URL`
-- If env vars change, restart the dev server
-- For upload issues, verify bucket name/folder and backend S3 creds
