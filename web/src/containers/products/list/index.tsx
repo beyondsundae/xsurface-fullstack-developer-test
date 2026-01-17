@@ -88,7 +88,6 @@ export default function Products() {
       )
       .then(({ data }) => {
         const { products, count } = data || {};
-        console.log("🐷 data", data);
         setProducts(products);
         setSetCount(count);
       })

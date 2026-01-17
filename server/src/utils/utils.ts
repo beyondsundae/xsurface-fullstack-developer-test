@@ -93,7 +93,6 @@ export const formatFilterTransform = (filter: IProductFilterInput) => {
   //     result = {...result, searchText: params?.searchText}
   // }
 
-  console.log("🌮 result", result);
   return result;
 };
 
