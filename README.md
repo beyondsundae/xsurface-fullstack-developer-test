@@ -1,5 +1,9 @@
 # xsurface-fullstack-developer-test
 
+## Basic JS & CSS Test
+- Functions are located at `/test/xsf.js`
+- Jest tests are located at `/server/src/tests/xsf.test.js`
+
 Production Demo:
 https://xsurface-fullstack-developer-test-ckwheiiky.vercel.app
 
