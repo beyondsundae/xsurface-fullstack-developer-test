@@ -1,3 +1,4 @@
+import { useApiHooks, useS3Hooks } from "@/src/utils/api";
 import { theme } from "@/src/utils/theme";
 import { formatFileSize } from "@/src/utils/utils";
 import { DeleteOutlined, UploadOutlined } from "@ant-design/icons";
@@ -15,17 +16,16 @@ import {
   Typography,
   Upload,
   UploadFile,
-  UploadProps
+  UploadProps,
 } from "antd";
 import { SizeType } from "antd/es/config-provider/SizeContext";
-import axios from "axios";
 import dayjs, { Dayjs } from "dayjs";
 import { useEffect, useMemo, useState } from "react";
 const { Text, Link } = Typography;
 const { Dragger } = Upload;
 
 import { v4 as uuid } from "uuid";
-type FieldType = {
+export type FieldType = {
   productName: string;
   code: string;
   price: number;
@@ -58,6 +58,10 @@ const formatter: InputNumberProps<number>["formatter"] = (value) => {
 interface props {}
 
 export default function CreateProduct({}: props) {
+  /* ---------------------------------- hooks --------------------------------- */
+
+  const { uploadS3fileApi, deleteS3fileApi } = useS3Hooks();
+  const { createProductApi } = useApiHooks();
   /* ---------------------------------- state --------------------------------- */
   const [isUploading, setIsUploading] = useState(false);
   const [uploadedURL, setUploadedURL] = useState<string[]>([]);
@@ -191,18 +195,15 @@ export default function CreateProduct({}: props) {
         `${process.env.NEXT_PUBLIC_BUCKET_PRODUCTS_FOLDER}/${uuid()}.jpg`
       );
 
-      const result = await axios
-        .post(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/s3-client/upload`,
-          formData
-        )
-        ?.then(({ data: latestUploadedURL = null }) => {
+      const result = await uploadS3fileApi({ formData })?.then(
+        ({ data: latestUploadedURL = null }) => {
           if (latestUploadedURL) {
             setUploadedURL((prev) => [...prev, latestUploadedURL]);
 
             message.success("Files uploaded successfully!");
           }
-        });
+        }
+      );
     } catch (error) {
       message.error(`Failed to upload image to S3. Please try again. ${error}`);
     } finally {
@@ -216,11 +217,7 @@ export default function CreateProduct({}: props) {
     message.success("Reset form sucessfully");
   };
   const createProduct = async (values: FieldType) => {
-    const result = await axios
-      .post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/products/create`, {
-        images: uploadedURL,
-        ...values,
-      })
+    const result = await createProductApi({ uploadedURL, values })
       .then(({ data }) => {
         message.success(
           `Created product sucessfully ${data?.code}-${data?.productName}`
@@ -261,15 +258,8 @@ export default function CreateProduct({}: props) {
                 const key = `${splitted?.[3]}/${splitted?.[4]}`;
 
                 try {
-                  const result = await axios
-                    .post(
-                      `${process.env.NEXT_PUBLIC_BACKEND_URL}/s3-client/delete`,
-                      {
-                        Bucket: process.env.NEXT_PUBLIC_BUCKET!,
-                        Key: key,
-                      }
-                    )
-                    ?.then(({ data }) => {
+                  const result = await deleteS3fileApi({ key })?.then(
+                    ({ data }) => {
                       const { status } = data || {};
 
                       if (status) {
@@ -289,7 +279,8 @@ export default function CreateProduct({}: props) {
                           setDeletingIndex(null);
                         }
                       }
-                    });
+                    }
+                  );
                 } catch (error) {
                   message.error(
                     `Failed to deleting image to S3. Please try again. ${error}`

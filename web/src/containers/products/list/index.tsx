@@ -2,18 +2,20 @@
 
 import StyledListCard from "@/src/components/StyledListCard";
 import { IProduct } from "@/src/components/types/interface";
+import { useApiHooks } from "@/src/utils/api";
 import { theme } from "@/src/utils/theme";
 import { SearchOutlined } from "@ant-design/icons";
 import { Col, Input, message, Pagination, Row, Spin } from "antd";
-import axios, { AxiosRequestConfig } from "axios";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { useDebounce } from "use-debounce";
 
-
 export default function Products() {
   /* ---------------------------------- utils --------------------------------- */
   const router = useRouter();
+
+  /* ---------------------------------- hooks --------------------------------- */
+  const { findProducts } = useApiHooks();
 
   /* ---------------------------------- state --------------------------------- */
   const [products, setProducts] = useState<IProduct[]>([]);
@@ -77,15 +79,10 @@ export default function Products() {
     if (debouncedSearchText && debouncedSearchText?.length < 3) return;
 
     setIsLoading(true);
-    await axios
-      .post(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/products${formatQueryString}`,
-        {
-          ...(formatFilterSearch && {
-            filter: JSON.stringify(formatFilterSearch),
-          }),
-        } as unknown as AxiosRequestConfig<unknown>
-      )
+    await findProducts({
+      formatQueryString,
+      formatFilterSearch,
+    })
       .then(({ data }) => {
         const { products, count } = data || {};
         setProducts(products);

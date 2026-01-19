@@ -1,3 +1,4 @@
+
 # Logs
 logs
 *.log
@@ -145,3 +146,7 @@ vite.config.ts.timestamp-*
 .env.*
 *.key
 *.pem
+*.crt
+.env
+
+
