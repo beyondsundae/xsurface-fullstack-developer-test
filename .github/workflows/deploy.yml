@@ -30,7 +30,7 @@ jobs:
             git pull origin master
 
             echo "🐳 Building and starting containers"
-            docker compose -f docker-compose.prod.yml up -d --build
+            docker-compose -f docker-compose.prod.yml up -d --build
 
             echo "🧹 Cleaning unused images"
             docker image prune -f
