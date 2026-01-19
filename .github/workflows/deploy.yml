@@ -22,7 +22,7 @@ jobs:
 
             echo "🚀 Starting deployment"
 
-            cd /home/ubuntu/backend
+            cd xsurface-fullstack-developer-test/
 
             echo "📦 Fetching latest code"
             git fetch origin
