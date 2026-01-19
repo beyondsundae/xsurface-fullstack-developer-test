@@ -1,3 +1,4 @@
+import { Sorting } from "@/utils/utils.js";
 import type { QueryFilter, QueryOptions } from "mongoose";
 import ProductModel from "../../models/products/products.model.js";
 import type { Product } from "../../models/products/products.schema.js";
@@ -62,6 +63,7 @@ export const findProducts = async (
 
       const pipeline: any[] = [
         searchStage,
+        ...(options?.sort && { $sort: options?.sort ?? Sorting.DESC }),
         { $skip: options?.skip ?? 0 },
         { $limit: options?.limit ?? 20 },
       ];
@@ -83,9 +85,9 @@ export const findProducts = async (
   }
 
   let query = ProductModel.find({ ...filter });
+  if (options?.sort) query.sort(options?.sort);
   if (options?.limit) query.limit(options?.limit);
   if (options?.skip) query.skip(options?.skip);
-  if (options?.sort) query.sort(options?.sort);
 
   const result = await query.maxTimeMS(2000)?.lean();
 

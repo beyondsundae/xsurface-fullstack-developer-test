@@ -5,10 +5,15 @@ import { IProduct } from "@/src/components/types/interface";
 import { useApiHooks } from "@/src/utils/api";
 import { theme } from "@/src/utils/theme";
 import { SearchOutlined } from "@ant-design/icons";
-import { Col, Input, message, Pagination, Row, Spin } from "antd";
+import { Col, Input, message, Pagination, Row, Select, Spin } from "antd";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { useDebounce } from "use-debounce";
+
+enum Sorting {
+  ASC = "asc",
+  DESC = "desc",
+}
 
 export default function Products() {
   /* ---------------------------------- utils --------------------------------- */
@@ -25,6 +30,10 @@ export default function Products() {
   const [searchText, setSearchText] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [pageLimit, setPageLimit] = useState<number>(10);
+  const [currentSort, setCurrentSort] = useState<Sorting>(Sorting.DESC);
+  const [currentFieldSort, setCurrentFieldSory] = useState<string | null>(
+    "createdAt"
+  );
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   /* -------------------------------- variables ------------------------------- */
@@ -45,8 +54,16 @@ export default function Products() {
       result = [...result, `pageLimit=${pageLimit}&`];
     }
 
+    if (currentFieldSort) {
+      result = [...result, `currentFieldSort=${currentFieldSort}&`];
+    }
+
+    if (currentSort) {
+      result = [...result, `currentSort=${currentSort}&`];
+    }
+
     return result?.join("");
-  }, [currentPage, pageLimit]);
+  }, [currentPage, pageLimit, currentSort, currentFieldSort]);
 
   const formatFilterSearch = useMemo(() => {
     const formattedText = debouncedSearchText?.trim();
@@ -126,6 +143,36 @@ export default function Products() {
             allowClear
           />
         </Row>
+        <Col offset={17}>
+          <Select
+            defaultValue="createdAt"
+            value={currentFieldSort}
+            style={{ width: 200, margin: 6 }}
+            onChange={(value: string) => {
+              setCurrentFieldSory(value);
+              setCurrentSort(Sorting.DESC);
+
+            }}
+            options={[
+              { value: "productName", label: "Product Name" },
+              { value: "code", label: "Code" },
+              { value: "price", label: "Price" },
+              { value: "createdAt", label: "Created Date" },
+            ]}
+          />
+          <Select
+            defaultValue={"desc" as Sorting}
+            value={currentSort}
+            style={{ width: "auto" }}
+            onChange={(value: Sorting) => {
+              setCurrentSort(value);
+            }}
+            options={[
+              { value: "asc", label: "Assending" },
+              { value: "desc", label: "Descending" },
+            ]}
+          />
+        </Col>
 
         <Col offset={20}>
           <span

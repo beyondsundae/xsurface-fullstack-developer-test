@@ -15,6 +15,7 @@ export interface IProduct {
     viewed: number;
     dimension: Dimension;
     avaibleStock: number;
+    createdAt?: Date
   }
   export interface Dimension {
     width: number;
