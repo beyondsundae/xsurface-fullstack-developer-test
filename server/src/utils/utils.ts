@@ -3,7 +3,8 @@ import type { IProductFilterInput } from "../services/products/interface.js";
 export interface IQueryOptions {
   currentPage?: string;
   pageLimit?: string;
-  sort?: string;
+  currentFieldSort?: string;
+  currentSort?: string;
   // searchText?: string
 }
 
@@ -30,22 +31,36 @@ export interface IMongoDateFilter {
   lte?: Date;
 }
 
+export enum Sorting {
+  ASC = "asc",
+  DESC = "desc",
+}
+
 export const formatOptionTransform = (params: IQueryOptions) => {
-  let result: Record<string, string | number> = {};
+  let result: Record<string, string | number | Record<string, string>> = {};
   if (params?.currentPage) {
     result = {
       ...result,
       skip:
         (Number(params?.currentPage || 1) - 1) * Number(params["pageLimit"]),
-    }; // 0 - 9 // by limit is 10
+    }; // concept 0 - 9 // by limit is 10
   }
 
   if (params?.pageLimit) {
     result = { ...result, limit: Number(params?.pageLimit) };
   }
 
-  if (params?.sort) {
-    result = { ...result, sort: params?.sort };
+  if (params?.currentSort) {
+    result = {
+      ...result,
+      sort: {
+        [`${params?.currentFieldSort}`]: params?.currentSort, //=== Sorting.DESC ? "-1" : "1",
+      },
+
+      // `${params?.currentFieldSort} ${
+      //   params?.currentSort === Sorting.DESC ? "-1" : "1"
+      // }`,
+    };
   }
 
   return result;

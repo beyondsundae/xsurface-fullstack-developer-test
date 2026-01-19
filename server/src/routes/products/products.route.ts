@@ -1,24 +1,24 @@
 import type {
-    IProductFilterInput,
-    ResultFindProduct,
+  IProductFilterInput,
+  ResultFindProduct,
 } from "@/services/products/interface.js";
 import {
-    createProduct,
-    findProducts,
-    findProductsMeta,
-    getProduct,
+  createProduct,
+  findProducts,
+  findProductsMeta,
+  getProduct,
 } from "@/services/products/products.service.js";
 import {
-    formatFilterTransform,
-    formatOptionTransform,
-    type IQueryOptions,
+  formatFilterTransform,
+  formatOptionTransform,
+  type IQueryOptions,
 } from "@/utils/utils.js";
 import {
-    Router,
-    type Router as ExpressRouter,
-    type NextFunction,
-    type Request,
-    type Response,
+  Router,
+  type Router as ExpressRouter,
+  type NextFunction,
+  type Request,
+  type Response,
 } from "express";
 
 const router: ExpressRouter = Router();
@@ -40,10 +40,10 @@ router.get(
 
 router.post("/", async (req: Request, res: Response, next: NextFunction) => {
   const filters = JSON.parse(req.body?.filter) as IProductFilterInput;
+
   const options = req.query as IQueryOptions;
 
   try {
-
     const formattedFilter = formatFilterTransform(filters);
     const formattedOption = formatOptionTransform(options);
 
@@ -53,7 +53,6 @@ router.post("/", async (req: Request, res: Response, next: NextFunction) => {
           { ...(Object.keys(formattedFilter)?.length && formattedFilter) },
           { ...(Object.keys(formattedFilter)?.length && formattedOption) }
         );
-
 
         return { products: data, count: meta };
       }
@@ -77,7 +76,6 @@ router.post(
 
       res.send(result);
     } catch (error) {
-
       next(error);
     }
   }

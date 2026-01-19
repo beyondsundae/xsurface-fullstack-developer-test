@@ -22,6 +22,7 @@ import {
 import { CarouselRef } from "antd/es/carousel";
 import { Footer } from "antd/es/layout/layout";
 import axios from "axios";
+import dayjs from "dayjs";
 import { useEffect, useRef, useState } from "react";
 
 interface props {
@@ -127,7 +128,7 @@ export default function ProductShow({ productCode }: props) {
                       src={each ?? "/assets/pictures/default-product-pic.png"}
                       style={{
                         border: `1px solid ${theme.color.generalRed}`,
-                       
+
                         height: 72,
                         width: 72,
                         objectFit: "cover",
@@ -237,9 +238,14 @@ export default function ProductShow({ productCode }: props) {
                   </Col>
                 </Row>
               </Card>
+              <Col className="mt-4">
+                <span>Created At</span>{" "}
+                <StyledSecondaryText>{dayjs(product?.createdAt).format('DD-MM-YYYY: HH.mm')}</StyledSecondaryText>
+              </Col>
             </Col>
           </Row>
         </Col>
+        <span>Dimension</span>
       </Row>
       <Divider size="large" />
       <Row className=" p-8">

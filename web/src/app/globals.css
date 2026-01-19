@@ -30,6 +30,14 @@ body {
     Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
 }
 
+/* Prevent horizontal scrolling globally */
+html,
+body,
+#__next {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
 /* ----------------------------- carousel things ---------------------------- */
 
 .styled-banner-carousel .ant-carousel .slick-prev,
