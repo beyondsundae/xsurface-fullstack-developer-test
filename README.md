@@ -17,6 +17,7 @@ https://www.figma.com/board/ybKGgmHQXk05aCsK6dWw6O/xsf-brain?node-id=0-1&p=f&t=R
 - Storage: MongoDB, AWS S3 storage
 - Testing (server): Jest 29 + ts-jest (ESM preset)
 - DevOps: Docker (multi-stage), docker-compose, Nginx, Certbot, Vercel (web)
+- CI/CD: github action
 
 
 ## Production Hosting
