@@ -1,5 +1,5 @@
 # Certbot generated files
-nginx/certbot/conf/renewal/
-nginx/certbot/conf/live/
-nginx/certbot/conf/archive/
+certbot/conf/renewal/
+certbot/conf/live/
+certbot/conf/archive/
 **/certbot/**/renewal/*.conf
