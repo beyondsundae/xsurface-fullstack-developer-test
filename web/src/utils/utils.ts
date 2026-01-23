@@ -14,3 +14,19 @@ export const formatFileSize = (size: number) => {
 
   return fileSizeInMB;
 };
+
+
+export function getScreenSize() {
+  const width = window.innerWidth;
+  if (width < 576) {
+      return 'xs';
+  } else if (width >= 576 && width < 768) {
+      return 'sm';
+  } else if (width >= 768 && width < 992) {
+      return 'md';
+  } else if (width >= 992 && width < 1200) {
+      return 'lg';
+  } else {
+      return 'xl';
+  }
+}

@@ -1,8 +1,9 @@
 import { UserOutlined } from "@ant-design/icons";
 import { Avatar, Carousel, Col, Row } from "antd";
-import { useMemo, useState } from "react";
+import { useLayoutEffect, useMemo, useState } from "react";
 import { StyledCenterDiv } from "../utils/components";
 import { formatPrice } from "../utils/utils";
+import { IProduct } from "./types/interface";
 
 const dataTotal = 20;
 
@@ -29,20 +30,45 @@ const carouselStyle: React.CSSProperties = {
 export default function LateseViewed() {
   /* ---------------------------------- state --------------------------------- */
   const [currentSlide, setCurrentSlide] = useState<number>(0);
+  const [getLatestViewed, setGetLatestViewed] = useState([]);
 
   // pagination concept
   //   (1-1) * 6 = start at 0/ length = 6
   //   (2-1) * 6 = start at 6/ length = 6
 
+  /* ----------------------------------- pre ---------------------------------- */
+
+  const updateLatestViewed = () => {
+    const latestViews = localStorage?.getItem("xsf-test-latest-viewed");
+
+    if (latestViews) {
+      const result = JSON?.parse(latestViews);
+
+      setGetLatestViewed(result);
+    }
+  };
+
+  useLayoutEffect(() => {
+    if (typeof window !== "undefined") {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      updateLatestViewed();
+    }
+  }, []);
+
   /* -------------------------------- variables ------------------------------- */
   const limit = 6;
-  const pagesTotal = Math.ceil(dataTotal / limit);
+  const pagesTotal = useMemo(
+    () => Math.ceil(getLatestViewed?.length / limit),
+    [getLatestViewed]
+  );
 
   const startIndex = currentSlide * limit;
   const limitedLatestViewedProduts = useMemo(
-    () => mockLatestViewedProducts?.slice(startIndex, startIndex + limit),
-    [startIndex, currentSlide]
+    () => getLatestViewed?.slice(startIndex, startIndex + limit),
+    [startIndex, currentSlide, getLatestViewed]
   );
+
+  /* -------------------------------- functions ------------------------------- */
 
   return (
     <div style={{ border: "1px solid transparent" }}>
@@ -74,30 +100,32 @@ export default function LateseViewed() {
                     className="my-10 w-full px-[120px]"
                     style={{ border: "1px solid transparent" }}
                   >
-                    {limitedLatestViewedProduts?.map((each, index) => (
-                      <Col key={index} className="mb-3">
-                        <StyledCenterDiv>
-                          <Avatar
-                            className="rounded-xl"
-                            style={{ borderRadius: 16 }}
-                            src={each?.img}
-                            shape="square"
-                            size={120}
-                            icon={<UserOutlined />}
-                          />
+                    {limitedLatestViewedProduts?.map(
+                      (each: Partial<IProduct>, index: number) => (
+                        <Col key={index} className="mb-3">
+                          <StyledCenterDiv>
+                            <Avatar
+                              className="rounded-xl"
+                              style={{ borderRadius: 16 }}
+                              src={each?.img}
+                              shape="square"
+                              size={120}
+                              icon={<UserOutlined />}
+                            />
 
-                          <span>
-                            {each?.productName} {each?.no}
-                          </span>
-                          <span>
-                            <span className="font-bold">
-                              {formatPrice(each?.price)}
+                            <span>
+                              {each?.productName} {each?.code}
                             </span>
-                            /{each?.unit}
-                          </span>
-                        </StyledCenterDiv>
-                      </Col>
-                    ))}
+                            <span>
+                              <span className="font-bold">
+                                {formatPrice(each?.price)}
+                              </span>
+                              /{each?.unit}
+                            </span>
+                          </StyledCenterDiv>
+                        </Col>
+                      )
+                    )}
                   </Row>
                 </div>
               ))}
