@@ -101,7 +101,7 @@ export default function LateseViewed() {
                     style={{ border: "1px solid transparent" }}
                   >
                     {limitedLatestViewedProduts?.map(
-                      (each: Partial<IProduct> | unknown, index: string) => (
+                      (each: Partial<IProduct>, index: number) => (
                         <Col key={index} className="mb-3">
                           <StyledCenterDiv>
                             <Avatar
