@@ -2,7 +2,7 @@ import StyledListCard from "@/src/components/StyledListCard";
 import { IProduct } from "@/src/components/types/interface";
 import { StyledSecondaryText } from "@/src/utils/components";
 import { theme } from "@/src/utils/theme";
-import { formatPrice } from "@/src/utils/utils";
+import { formatPrice, getScreenSize } from "@/src/utils/utils";
 import {
   ShoppingCartOutlined,
   ShoppingOutlined,
@@ -23,7 +23,7 @@ import { CarouselRef } from "antd/es/carousel";
 import { Footer } from "antd/es/layout/layout";
 import axios from "axios";
 import dayjs from "dayjs";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 interface props {
   productCode: string;
@@ -40,7 +40,76 @@ export default function ProductShow({ productCode }: props) {
   const carouselRef = useRef<React.Ref<CarouselRef>>(null);
 
   /* -------------------------------- variables ------------------------------- */
+  const screenSize = getScreenSize();
+
+  const isMobile = ["xs", "sm"].includes(screenSize);
+
   /* -------------------------------- functions ------------------------------- */
+
+  // concept FIFO
+  // push to localstorage
+  // store prodcutName, code, price, (unit)
+  // check duplicated
+  // - take old duplicated out
+  // - push to last
+  const limitedLatestViewedSize = 10;
+  const getXSFLatestLocalStorage = () => {
+    const latestViews = localStorage.getItem("xsf-test-latest-viewed") || "[]";
+
+    if (latestViews) {
+      const result = JSON?.parse(latestViews);
+
+      return result;
+    }
+  };
+
+  const setXSFLocalStorage = (
+    currentProduct: Record<string, unknown>,
+    currentLatestViewedStorage: Record<string, unknown>[]
+  ) => {
+
+    // find duplicated index
+    const foundProductIndex = currentLatestViewedStorage?.findIndex(
+      (each) => each?.code === currentProduct?.code
+    );
+
+    // splice out
+    if (foundProductIndex !== -1) {
+      currentLatestViewedStorage.splice(foundProductIndex, 1);
+    }
+
+    // limit the array
+    let modifiedProductsViewed = [
+      currentProduct,
+      ...currentLatestViewedStorage,
+    ];
+
+    if (modifiedProductsViewed?.length >= limitedLatestViewedSize) {
+      modifiedProductsViewed = modifiedProductsViewed?.slice(
+        0,
+        limitedLatestViewedSize
+      ); // start index, length of keeping
+    }
+
+    localStorage.setItem(
+      "xsf-test-latest-viewed",
+      JSON.stringify(modifiedProductsViewed)
+    );
+  };
+
+  const updateLatestViewed = (product: IProduct) => {
+    const { productName, code, price, images } = product || {};
+    const currentProduct = {
+      productName,
+      code,
+      price,
+      img: images?.[0] || "",
+    };
+
+    const currentLatestViewedStorage = getXSFLatestLocalStorage();
+
+    setXSFLocalStorage(currentProduct, currentLatestViewedStorage);
+  };
 
   const fetchProduct = async () => {
     setIsLoading(true);
@@ -55,6 +124,8 @@ export default function ProductShow({ productCode }: props) {
           priceAfterDiscount: 600,
           avaibleStock: Math.floor(Math.random()),
         });
+
+        updateLatestViewed(product);
       })
       .catch((err) => {
         const errMessage = err?.response?.data?.message;
@@ -81,11 +152,26 @@ export default function ProductShow({ productCode }: props) {
     zIndex: 1000,
   };
 
+  const RenderProductName = useMemo(
+    () => (
+      <>
+        <Row>
+          <span className="text-4xl font-semibold my-3">
+            {product?.productName}
+          </span>
+        </Row>
+        
+      </>
+    ),
+    [product]
+  );
+
   return (
     <>
-      <Row className="w-screen h-screen  justify-center mt-6">
+      <Row className="w-screen h-full  justify-center mt-6" >
         {/* <Row className="w-9/10"></Row> */}
-        <Col span={12}>
+        {isMobile && RenderProductName}
+        <Col span={isMobile ? 24 : 12} >
           <div className="product-show-carousel px-6">
             <Carousel
               ref={carouselRef as React.Ref<CarouselRef>}
@@ -98,7 +184,7 @@ export default function ProductShow({ productCode }: props) {
                     <div key={index} className="text-center">
                       <Image
                         width={"100%"}
-                        height={640}
+                        height={isMobile ? 320 : 640}
                         style={{
                           objectFit: "cover",
                           border: `1px solid ${theme.color.generalRed}`,
@@ -147,31 +233,27 @@ export default function ProductShow({ productCode }: props) {
             )}
           </Row>
         </Col>
-        <Col span={11}>
+        <Col span={isMobile ? 24 : 11} >
+          {!isMobile && RenderProductName}
           <Row>
-            <span className="text-4xl font-semibold my-3">
-              {product?.productName}
+          <Col span={12}>
+            <span className="text-2xl font-semibold my-1">
+              {formatPrice(product?.priceAfterDiscount)}{" "}
             </span>
-          </Row>
-          <Row>
-            <Col span={12}>
-              <span className="text-2xl font-semibold my-1">
-                {formatPrice(product?.priceAfterDiscount)}{" "}
-              </span>
-              <span
-                className="text-lg  m-1"
-                style={{ color: theme.color.secondary }}
-              >
-                <s>{formatPrice(product?.price) || "-"}</s>
-              </span>
-            </Col>
-            <Col className="text-end" span={11}>
-              <span className="text-lg text-right  mx-2">
-                4.8/5
-                <StarFilled className="text-4xl" style={{ color: "#FFEA00" }} />
-              </span>
-            </Col>
-          </Row>
+            <span
+              className="text-lg  m-1"
+              style={{ color: theme.color.secondary }}
+            >
+              <s>{formatPrice(product?.price) || "-"}</s>
+            </span>
+          </Col>
+          <Col className="text-end" span={11}>
+            <span className="text-lg text-right  mx-2">
+              4.8/5
+              <StarFilled className="text-4xl" style={{ color: "#FFEA00" }} />
+            </span>
+          </Col>
+        </Row>
           <Row>
             <span
               className="text-lg text-right  m-2"
@@ -202,7 +284,7 @@ export default function ProductShow({ productCode }: props) {
               </Card>
             </Col>
           </Row>
-          <Row className="my-4">
+          <Row className="my-4" >
             <Col span={24}>
               <span className="text-lg text-right mx-2">Attributes</span>
             </Col>
@@ -240,18 +322,19 @@ export default function ProductShow({ productCode }: props) {
               </Card>
               <Col className="mt-4">
                 <span>Created At</span>{" "}
-                <StyledSecondaryText>{dayjs(product?.createdAt).format('DD-MM-YYYY: HH.mm')}</StyledSecondaryText>
+                <StyledSecondaryText>
+                  {dayjs(product?.createdAt).format("DD-MM-YYYY: HH.mm")}
+                </StyledSecondaryText>
               </Col>
             </Col>
           </Row>
         </Col>
-        <span>Dimension</span>
       </Row>
       <Divider size="large" />
-      <Row className=" p-8">
+      <Row className=" p-8" >
         <span className="text-xl font-semibold">Relate Products</span>
       </Row>
-      <Row className="mb-24 p-8">
+      <Row className="mb-24 p-8" justify="center">
         {Array(16)
           .fill({
             productName: `Product Name`,
@@ -263,8 +346,8 @@ export default function ProductShow({ productCode }: props) {
           ?.map((each, index) => (
             <>
               <Col
+                span={isMobile ? 16 : 4} 
                 key={index}
-                span={4}
                 className="mx-5 mb-12"
                 style={{ cursor: "pointer" }}
               >
@@ -276,7 +359,7 @@ export default function ProductShow({ productCode }: props) {
       <Footer style={{ ...footerStyle }}>
         <Row className="mb-2 mt-4 mr-12" justify="end">
           <Button
-            className="w-1/10 mx-2"
+            className={`${isMobile ? "w-5/10" : "w-1/10"} mx-2`}
             variant="outlined"
             shape="round"
             color="danger"
@@ -286,7 +369,7 @@ export default function ProductShow({ productCode }: props) {
           </Button>
 
           <Button
-            className="w-2/10 mx-2"
+            className={`${isMobile ? "w-3/10" : "w-2/10"} mx-2`}
             color="danger"
             variant="solid"
             shape="round"
